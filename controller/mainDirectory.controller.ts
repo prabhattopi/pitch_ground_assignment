@@ -3,14 +3,15 @@ import jwt from "jsonwebtoken"
 import  asynHandler from "express-async-handler"
 import Folder from "../models/mainDirectory.models"
 import config from "config";
-
+import Todo from "../models/subDirectorymodels"
+import {Request,Response} from "express"
 //desc create new directory
 //@route POST /directory/create
 //@access Public
 
 const JWT_SECRET = config.get("host") as string;
 
-const createFolder=asynHandler(async(req,res)=>{
+const createFolder=asynHandler(async(req:Request,res:Response)=>{
     const {name}=req.body
     if(!name){
         res.status(400)
@@ -53,7 +54,12 @@ const getFoldersList=asynHandler(async(req,res)=>{
 //@access Public
 const removeFolder=asynHandler(async(req,res)=>{
     const {name}=req.body
+       const findOneTodo:any=await Folder.findOne({name})
     const removeoneFolder=await Folder.findOneAndDelete({name})
+ 
+    const removeAllTodo=await Todo.deleteMany({user:findOneTodo._id})
+
+
     res.status(200).json({message:"Success"})
    
 

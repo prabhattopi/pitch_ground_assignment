@@ -7,8 +7,9 @@ import config from "config"
 import mongoose, { DocumentDefinition } from "mongoose";
 import { FolderDocument } from "../models/mainDirectory.models";
 import { Request } from 'express';
+import jwt_decode, { JwtPayload } from 'jwt-decode'
 
- 
+
 
 const JWT_SECRET = config.get("JWT_SECRET") as string;
 export interface RequestWithUser extends Request {
@@ -17,23 +18,26 @@ export interface RequestWithUser extends Request {
 const protect=asynHandler(async(req:RequestWithUser,res:Response,next:NextFunction)=>{
 
     let token
+    console.log("After")
     if(req.headers.authorization&&req.headers.authorization.startsWith("Bearer")){
             //Get token from headers
 
             try{
                 token=req.headers.authorization.split(" ")[1]
 
-                //verified Token
-                const decoded:any=jwt.verify(token,JWT_SECRET)
-
+               
+                const decoded:any=jwt_decode<JwtPayload>(token)
+              
+              
                 //Get user from the token
 
-               const user=await Folder.findById(decoded.id).select("-name")
-                
+               const user=await Folder.findById(decoded.id).select("name")
+                console.log(user)
                if (user) {
                 req.user = user;
                 next();
-              } 
+              }
+             
                 // console.log(req.user)
 
              
