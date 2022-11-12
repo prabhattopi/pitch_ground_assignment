@@ -18,7 +18,7 @@ export interface RequestWithUser extends Request {
 const protect=asynHandler(async(req:RequestWithUser,res:Response,next:NextFunction)=>{
 
     let token
-    console.log("After")
+
     if(req.headers.authorization&&req.headers.authorization.startsWith("Bearer")){
             //Get token from headers
 
@@ -36,6 +36,10 @@ const protect=asynHandler(async(req:RequestWithUser,res:Response,next:NextFuncti
                if (user) {
                 req.user = user;
                 next();
+              }
+              else{
+                res.status(401)
+                throw new Error("Not a directory or folder exist")
               }
              
                 // console.log(req.user)
