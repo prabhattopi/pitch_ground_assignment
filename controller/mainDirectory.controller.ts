@@ -9,7 +9,7 @@ import {Request,Response} from "express"
 //@route POST /directory/create
 //@access Public
 
-const JWT_SECRET = config.get("host") as string;
+const JWT_SECRET = config.get("JWT_SECRET") as string;
 
 const createFolder=asynHandler(async(req:Request,res:Response)=>{
     const {name}=req.body
@@ -68,7 +68,7 @@ const removeFolder=asynHandler(async(req,res)=>{
 
 
 //Generate JWT
-const generateToken=(id:string)=>{
+export const generateToken=(id:string)=>{
     return jwt.sign({id},JWT_SECRET)
 }
 

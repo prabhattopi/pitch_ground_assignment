@@ -1,42 +1,38 @@
 import asyncHandler from "express-async-handler";
-import Folder from "../models/mainDirectory.models";
+
 import Todo from "../models/subDirectorymodels";
-import express, { Express, Request, Response } from "express";
+import { Response } from "express";
 import { RequestWithUser } from "../middlewares/authMiddleware";
-import { number } from "yup";
-import { Interface } from "readline";
+
 
 //@des Get Todo
 //@route POST /todo-item/list
 //@access Private
 
 const getGoals = asyncHandler(async (req: RequestWithUser, res: Response) => {
-  const { page = 1, limit = 5,order="asc"} = req.query;
-  let arrangeData:any=1
-  if(order==="asc"){
-    arrangeData=1
-  }
-  else if(order==="desc"){
-    arrangeData=-1
+  const { page = 1, limit = 5, order = "asc" } = req.query;
+  let arrangeData: any = 1;
+  if (order === "asc") {
+    arrangeData = 1;
+  } else if (order === "desc") {
+    arrangeData = -1;
   }
   const skip: number = (Number(page) - 1) * Number(limit);
   const goals = await Todo.find({ user: req.user?.id })
     .limit(Number(limit))
     .skip(skip)
-    .sort({createdAt:arrangeData})
-    ;
+    .sort({ createdAt: arrangeData });
   console.log(goals);
   res.status(200).json({ page, limit, goals });
 });
 const getGoalsDone = asyncHandler(
   async (req: RequestWithUser, res: Response) => {
-    const { page = 1, limit = 5,order="asc" } = req.query;
-    let arrangeData:any=1
-    if(order==="asc"){
-      arrangeData=1
-    }
-    else if(order==="desc"){
-      arrangeData=-1
+    const { page = 1, limit = 5, order = "asc" } = req.query;
+    let arrangeData: any = 1;
+    if (order === "asc") {
+      arrangeData = 1;
+    } else if (order === "desc") {
+      arrangeData = -1;
     }
     const skip: number = (Number(page) - 1) * Number(limit);
     const goals = await Todo.find({
@@ -45,8 +41,8 @@ const getGoalsDone = asyncHandler(
     })
       .limit(Number(limit))
       .skip(skip)
-      .sort({createdAt:arrangeData});
-  
+      .sort({ createdAt: arrangeData });
+
     res.status(200).json({ page, limit, goals });
   }
 );
