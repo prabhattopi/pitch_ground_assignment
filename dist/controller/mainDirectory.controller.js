@@ -12,15 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeFolder = exports.getFoldersList = exports.createFolder = void 0;
+exports.removeFolder = exports.getFoldersList = exports.createFolder = exports.generateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const mainDirectory_models_1 = __importDefault(require("../models/mainDirectory.models"));
 const config_1 = __importDefault(require("config"));
+const subDirectorymodels_1 = __importDefault(require("../models/subDirectorymodels"));
 //desc create new directory
 //@route POST /directory/create
 //@access Public
-const JWT_SECRET = config_1.default.get("host");
+const JWT_SECRET = config_1.default.get("JWT_SECRET");
 const createFolder = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.body;
     if (!name) {
@@ -40,7 +41,7 @@ const createFolder = (0, express_async_handler_1.default)((req, res) => __awaite
         res.status(201).json({
             _id: newFolder.id,
             name: newFolder.name,
-            token: generateToken(newFolder._id)
+            token: (0, exports.generateToken)(newFolder._id)
         });
     }
 }));
@@ -58,7 +59,9 @@ exports.getFoldersList = getFoldersList;
 //@access Public
 const removeFolder = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name } = req.body;
+    const findOneTodo = yield mainDirectory_models_1.default.findOne({ name });
     const removeoneFolder = yield mainDirectory_models_1.default.findOneAndDelete({ name });
+    const removeAllTodo = yield subDirectorymodels_1.default.deleteMany({ user: findOneTodo._id });
     res.status(200).json({ message: "Success" });
 }));
 exports.removeFolder = removeFolder;
@@ -66,3 +69,4 @@ exports.removeFolder = removeFolder;
 const generateToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, JWT_SECRET);
 };
+exports.generateToken = generateToken;

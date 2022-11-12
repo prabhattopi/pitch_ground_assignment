@@ -1,30 +1,23 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const errorMiddleware_1 = require("./middlewares/errorMiddleware");
 const config_1 = __importDefault(require("config"));
-const cors_1 = __importDefault(require("cors"));
-const morgan_1 = __importDefault(require("morgan"));
 const connect_1 = __importDefault(require("./db/connect"));
+const logicofServer_1 = __importDefault(require("./logicofServer"));
 const port = config_1.default.get("port");
 const host = config_1.default.get("host");
-const app = (0, express_1.default)();
-app.use((0, morgan_1.default)("tiny"));
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: true }));
-app.get("/", (req, res) => {
-    res.send("Express + TypeScript Server");
-});
-const mainDirectory_1 = require("./routes/mainDirectory");
-const subDirectory_1 = require("./routes/subDirectory");
-app.use("/directory", mainDirectory_1.router);
-app.use("/todo-item", subDirectory_1.router);
-app.use(errorMiddleware_1.errorHandle);
-app.listen(port, () => {
+logicofServer_1.default.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`⚡️[server]: Server is running at https://${host}:${port}`);
-    (0, connect_1.default)();
-});
+    yield (0, connect_1.default)();
+}));

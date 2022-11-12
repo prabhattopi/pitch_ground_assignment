@@ -14,3 +14,5 @@ router.route("/create").post(authMiddleware_1.protect, subDirectory_controller_1
 router.route("/mark-as-done").post(authMiddleware_1.protect, subDirectory_controller_1.updateGoals);
 router.route("/mark-as-not-done").post(authMiddleware_1.protect, subDirectory_controller_1.updateGoals);
 router.route("/move-to-directory").post(authMiddleware_1.protect, subDirectory_controller_1.updateGoals);
+router.route("/list-done").post(authMiddleware_1.protect, subDirectory_controller_1.getGoalsDone);
+router.route("/list-notdone").post(authMiddleware_1.protect, subDirectory_controller_1.getGoalsDone);

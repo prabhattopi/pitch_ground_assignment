@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteGoals = exports.updateGoals = exports.setGoals = exports.getGoals = void 0;
+exports.getGoalsDone = exports.deleteGoals = exports.updateGoals = exports.setGoals = exports.getGoals = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const subDirectorymodels_1 = __importDefault(require("../models/subDirectorymodels"));
 //@des Get Todo
@@ -20,23 +20,56 @@ const subDirectorymodels_1 = __importDefault(require("../models/subDirectorymode
 //@access Private
 const getGoals = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const goals = yield subDirectorymodels_1.default.find({ user: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id });
+    const { page = 1, limit = 5, order = "asc" } = req.query;
+    let arrangeData = 1;
+    if (order === "asc") {
+        arrangeData = 1;
+    }
+    else if (order === "desc") {
+        arrangeData = -1;
+    }
+    const skip = (Number(page) - 1) * Number(limit);
+    const goals = yield subDirectorymodels_1.default.find({ user: (_a = req.user) === null || _a === void 0 ? void 0 : _a.id })
+        .limit(Number(limit))
+        .skip(skip)
+        .sort({ createdAt: arrangeData });
     console.log(goals);
-    res.status(200).json(goals);
+    res.status(200).json({ page, limit, goals });
 }));
 exports.getGoals = getGoals;
+const getGoalsDone = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    const { page = 1, limit = 5, order = "asc" } = req.query;
+    let arrangeData = 1;
+    if (order === "asc") {
+        arrangeData = 1;
+    }
+    else if (order === "desc") {
+        arrangeData = -1;
+    }
+    const skip = (Number(page) - 1) * Number(limit);
+    const goals = yield subDirectorymodels_1.default.find({
+        user: (_b = req.user) === null || _b === void 0 ? void 0 : _b.id,
+        status: req.body.status,
+    })
+        .limit(Number(limit))
+        .skip(skip)
+        .sort({ createdAt: arrangeData });
+    res.status(200).json({ page, limit, goals });
+}));
+exports.getGoalsDone = getGoalsDone;
 //@des Set Todo
 //@route POST /todo-item/create
 //@access Private
 const setGoals = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _c;
     if (!req.body) {
         res.status(400);
         throw new Error("Please add a title field");
     }
     const goal = yield subDirectorymodels_1.default.create({
         title: req.body.title,
-        user: (_b = req.user) === null || _b === void 0 ? void 0 : _b.id,
+        user: (_c = req.user) === null || _c === void 0 ? void 0 : _c.id,
     });
     res.status(200).json(goal);
 }));

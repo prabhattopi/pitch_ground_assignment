@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.protect = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const mainDirectory_models_1 = __importDefault(require("../models/mainDirectory.models"));
 const config_1 = __importDefault(require("config"));
+const jwt_decode_1 = __importDefault(require("jwt-decode"));
 const JWT_SECRET = config_1.default.get("JWT_SECRET");
 const protect = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let token;
@@ -24,13 +24,17 @@ const protect = (0, express_async_handler_1.default)((req, res, next) => __await
         //Get token from headers
         try {
             token = req.headers.authorization.split(" ")[1];
-            //verified Token
-            const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
+            const decoded = (0, jwt_decode_1.default)(token);
             //Get user from the token
-            const user = yield mainDirectory_models_1.default.findById(decoded.id).select("-name");
+            const user = yield mainDirectory_models_1.default.findById(decoded.id).select("name");
+            console.log(user);
             if (user) {
                 req.user = user;
                 next();
+            }
+            else {
+                res.status(401);
+                throw new Error("Not a directory or folder exist");
             }
             // console.log(req.user)
         }
